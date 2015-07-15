@@ -30,6 +30,8 @@ summary(steps)
 
 ## What is mean total number of steps taken per day?
 
+Now, if that is all over and we can actually use Git again...   We should test that.
+
 
 
 ## What is the average daily activity pattern?
