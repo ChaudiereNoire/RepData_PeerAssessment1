@@ -21,10 +21,19 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 steps <- read.csv("activity.csv")
 ```
 
-Let's summarize the activity data and take a look at its limits.
+Let's arrange the data by day and take a look it.
 
 ```{r}
-summary(steps)
+library(plyr)
+# Run the functions length, mean, and sd on the value of "change" for each group, 
+# broken down by day
+csteps <- ddply(steps, c("date"), summarise,
+               N    = length(steps),
+               mean = mean(steps),
+               sd   = sd(steps),
+               se   = sd / sqrt(N)
+)
+csteps
 ```
 
 
