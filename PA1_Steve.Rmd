@@ -47,8 +47,12 @@ hist(csteps$count)
 ```
 
 
+We are also asked to calculate and report the mean and median of the total number of steps taken per day.  This would be the mean and median of the daily totals, representing the mean and median of the entire sample period.
 
-Calculate and report the mean and median of the total number of steps taken per day
+```{r}
+mean(csteps$count, na.rm = TRUE)
+median(csteps$count, na.rm = TRUE)
+```
 
 
 
