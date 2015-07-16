@@ -28,11 +28,10 @@ library(plyr)
 # Run the functions length, mean, and sd on the value of "change" for each group, 
 # broken down by day
 csteps <- ddply(steps, c("date"), summarise,
-               N    = length(steps),
-               mean = mean(steps),
-               sd   = sd(steps),
-               se   = sd / sqrt(N)
-)
+               count  = sum(steps),
+               mean   = mean(steps),
+               median = median(steps)
+               )
 csteps
 ```
 
