@@ -38,7 +38,17 @@ csteps
 
 ## What is mean total number of steps taken per day?
 
-Now, if that is all over and we can actually use Git again...   We should test that.
+For this part of the assignment, we are permitted to ignore the missing values in the dataset.
+
+We are asked to calculate the total number of steps taken per day, which is in csteps as count, and print the result as a histogram.
+
+```{r}
+hist(csteps$count)
+```
+
+
+
+Calculate and report the mean and median of the total number of steps taken per day
 
 
 
