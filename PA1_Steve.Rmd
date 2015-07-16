@@ -32,7 +32,7 @@ csteps <- ddply(steps, c("date"), summarise,
                mean   = mean(steps),
                median = median(steps)
                )
-csteps
+# csteps
 ```
 
 
@@ -57,6 +57,19 @@ median(csteps$count, na.rm = TRUE)
 
 
 ## What is the average daily activity pattern?
+```{r}
+library(ggplot2)
+# The daily pattern is the average number of steps taken per five minute period across all of
+# the dates sampled in the dataset
+psteps <- ddply(steps, c("interval"), summarise,
+               mean_S   = mean(steps, na.rm = TRUE)
+               )
+# psteps
+ggplot(psteps, aes(interval, mean_S)) + geom_line() +
+  xlab("") + ylab("Mean steps taken") +
+  ggtitle("Average daily activity pattern")
+
+```
 
 
 
