@@ -99,3 +99,26 @@ median(cisteps$count, na.rm = TRUE)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+isteps$dayofweek <- weekdays(as.Date(isteps$date))
+isteps_weekend <- isteps[which(isteps$dayofweek == "Saturday" | isteps$dayofweek == "Sunday"),]
+isteps_weekday <- isteps[which(!(isteps$dayofweek == "Saturday" | isteps$dayofweek == "Sunday")),]
+
+# The daily pattern is the average number of steps taken per five minute period across all of
+# the dates sampled in the dataset
+pisteps_weekend <- ddply(isteps_weekend, c("interval"), summarise,
+               mean_S   = mean(steps, na.rm = TRUE)
+               )
+pisteps_weekday <- ddply(isteps_weekday, c("interval"), summarise,
+               mean_S   = mean(steps, na.rm = TRUE)
+               )
+# psteps
+ggplot(pisteps_weekend, aes(interval, mean_S)) + geom_line() +
+  xlab("") + ylab("Mean steps taken") +
+  ggtitle("Average daily activity weekend")
+ggplot(pisteps_weekday, aes(interval, mean_S)) + geom_line() +
+  xlab("") + ylab("Mean steps taken") +
+  ggtitle("Average daily activity weekday")
+
+```
