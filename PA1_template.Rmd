@@ -101,6 +101,13 @@ median(cisteps$count, na.rm = TRUE)
 ## Are there differences in activity patterns between weekdays and weekends?
 
 ```{r}
+library(ggplot2)
+library(gtable)
+library(gridExtra)
+
+# I used the technique for grid alignment published at
+# http://stackoverflow.com/questions/15016995/how-to-align-multiple-ggplot2-plots-and-add-shadows-over-all-of-them
+
 isteps$dayofweek <- weekdays(as.Date(isteps$date))
 isteps_weekend <- isteps[which(isteps$dayofweek == "Saturday" | isteps$dayofweek == "Sunday"),]
 isteps_weekday <- isteps[which(!(isteps$dayofweek == "Saturday" | isteps$dayofweek == "Sunday")),]
@@ -113,12 +120,23 @@ pisteps_weekend <- ddply(isteps_weekend, c("interval"), summarise,
 pisteps_weekday <- ddply(isteps_weekday, c("interval"), summarise,
                mean_S   = mean(steps, na.rm = TRUE)
                )
-# psteps
-ggplot(pisteps_weekend, aes(interval, mean_S)) + geom_line() +
+# Form a grid with two rows
+
+# Upper Row
+p_upper <- ggplot(pisteps_weekend, aes(interval, mean_S)) + geom_line() +
   xlab("") + ylab("Mean steps taken") +
   ggtitle("Average daily activity weekend")
-ggplot(pisteps_weekday, aes(interval, mean_S)) + geom_line() +
+# Lower Row
+p_lower <- ggplot(pisteps_weekday, aes(interval, mean_S)) + geom_line() +
   xlab("") + ylab("Mean steps taken") +
   ggtitle("Average daily activity weekday")
+
+##Arrange plots
+pushViewport(viewport(layout = grid.layout(2, 1)))
+vplayout <- function(x, y) 
+  viewport(layout.pos.row = x, layout.pos.col = y)
+#arrange time series
+print(p_upper, vp = vplayout(1, 1))
+print(p_lower, vp = vplayout(2, 1))
 
 ```
