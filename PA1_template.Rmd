@@ -8,18 +8,117 @@ output:
 
 ## Loading and preprocessing the data
 
+First we are going to load some data. It represents two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.  The dataset was downloaded from https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip and extracted to the working directory to start the project.
+
+Activity monitoring data [52K]
+ * steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+ * date: The date on which the measurement was taken in YYYY-MM-DD format
+ * interval: Identifier for the 5-minute interval in which measurement was taken
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+```{r}
+steps <- read.csv("activity.csv")
+```
+
+Let's arrange the data by day and take a look it.
+
+```{r}
+library(plyr)
+# Run the functions length, mean, and sd on the value of "change" for each group, 
+# broken down by day
+csteps <- ddply(steps, c("date"), summarise,
+               count  = sum(steps),
+               mean   = mean(steps),
+               median = median(steps)
+               )
+# csteps
+```
 
 
 ## What is mean total number of steps taken per day?
 
+For this part of the assignment, we are permitted to ignore the missing values in the dataset.
+
+We are asked to calculate the total number of steps taken per day, which is in csteps as count, and print the result as a histogram.
+
+```{r}
+hist(csteps$count)
+```
+
+
+We are also asked to calculate and report the mean and median of the total number of steps taken per day.  This would be the mean and median of the daily totals, representing the mean and median of the entire sample period.
+
+```{r}
+mean(csteps$count, na.rm = TRUE)
+median(csteps$count, na.rm = TRUE)
+```
+
 
 
 ## What is the average daily activity pattern?
+```{r}
+library(ggplot2)
+# The daily pattern is the average number of steps taken per five minute period across all of
+# the dates sampled in the dataset
+psteps <- ddply(steps, c("interval"), summarise,
+               mean_S   = mean(steps, na.rm = TRUE)
+               )
+# psteps
+ggplot(psteps, aes(interval, mean_S)) + geom_line() +
+  xlab("") + ylab("Mean steps taken") +
+  ggtitle("Average daily activity pattern")
+
+```
 
 
 
 ## Imputing missing values
 
+For this task we have to develop a strategy for filling in NAs with appropriate values and compare the 
+results of our reconstruction of the data with the original to see what we have done to the graphs.
 
+We will make a new histogram of the new dataset and compare mean and median with the old values.
+
+Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r}
+isteps <- steps
+isteps$steps <- ifelse(is.na(isteps$steps),0, isteps$steps)
+# Run the functions length, mean, and sd on the value of "change" for each group, 
+# broken down by day - same as the original set
+cisteps <- ddply(isteps, c("date"), summarise,
+               count  = sum(steps),
+               mean   = mean(steps),
+               median = median(steps)
+               )
+mean(csteps$count, na.rm = TRUE)
+median(csteps$count, na.rm = TRUE)
+mean(cisteps$count, na.rm = TRUE)
+median(cisteps$count, na.rm = TRUE)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+isteps$dayofweek <- weekdays(as.Date(isteps$date))
+isteps_weekend <- isteps[which(isteps$dayofweek == "Saturday" | isteps$dayofweek == "Sunday"),]
+isteps_weekday <- isteps[which(!(isteps$dayofweek == "Saturday" | isteps$dayofweek == "Sunday")),]
+
+# The daily pattern is the average number of steps taken per five minute period across all of
+# the dates sampled in the dataset
+pisteps_weekend <- ddply(isteps_weekend, c("interval"), summarise,
+               mean_S   = mean(steps, na.rm = TRUE)
+               )
+pisteps_weekday <- ddply(isteps_weekday, c("interval"), summarise,
+               mean_S   = mean(steps, na.rm = TRUE)
+               )
+# psteps
+ggplot(pisteps_weekend, aes(interval, mean_S)) + geom_line() +
+  xlab("") + ylab("Mean steps taken") +
+  ggtitle("Average daily activity weekend")
+ggplot(pisteps_weekday, aes(interval, mean_S)) + geom_line() +
+  xlab("") + ylab("Mean steps taken") +
+  ggtitle("Average daily activity weekday")
+
+```
